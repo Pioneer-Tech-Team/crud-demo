@@ -14,22 +14,14 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
-model User {
-  id       String    @id @default(uuid())
-  email    String    @unique
-  password String
-  name     String
-  sessions Session[]
-}
-
-model Session {
-  id        Int      @id @default(autoincrement())
-  sid       String   @unique
-  data      Json
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  uid       String?
-
-  user User? @relation(fields: [uid], references: [id])
+model Accounts {
+  company_group_id  Int      @id @default(autoincrement())
+  company_group_name String   @db.VarChar(50)
+  contact_person     String?  @db.VarChar(50)
+  phone              String?  @db.VarChar(10)
+  email_id           String?  @db.VarChar(100)
+  entered_by         String   @db.VarChar(10)
+  entry_date_time    DateTime @default(now())
+  edited_by          String?  @db.VarChar(10)
+  edit_date_time     DateTime?
 }
