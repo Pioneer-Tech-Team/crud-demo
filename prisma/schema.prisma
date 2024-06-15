@@ -21,8 +21,8 @@ model User {
   password             String
   name                 String
   sessions             Session[]
-  CreatedCompanyGroups CompanyGroup[] @relation("creator")
-  EditedCompanyGroups  CompanyGroup[] @relation("editor")
+  CreatedCompanyGroups CompanyGroup[] @relation(name: "creator", map: "enteredByUser")
+  EditedCompanyGroups  CompanyGroup[] @relation(name: "editor", map: "editedByUser")
 }
 
 model Session {
@@ -45,11 +45,10 @@ model CompanyGroup {
   entry_date_time    DateTime  @default(now())
   edited_by          String?
   edit_date_time     DateTime?
-  userId             String
   companies          Company[]
 
-  enteredByUser User  @relation(name: "creator", map: "EditedCompanyGroups", fields: [entered_by], references: [id])
-  editedByUser  User? @relation(name: "editor", map: "CreatedCompanyGroups", fields: [edited_by], references: [id])
+  enteredByUser User  @relation(name: "creator", fields: [entered_by], references: [id])
+  editedByUser  User? @relation(name: "editor", fields: [edited_by], references: [id])
 }
 
 model Company {
