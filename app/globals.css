@@ -79,3 +79,10 @@ html, body {
   height: 100%;
   width: 100%;
 }
+
+.table td:nth-child(even),.table th:nth-child(even) {
+  background-color: #D6EEEE;
+}
+.table, .table tr, .table td, .table th {
+  border: 1px solid;
+}
