@@ -16,11 +16,13 @@ datasource db {
 }
 
 model User {
-  id       String    @id @default(uuid())
-  email    String    @unique
-  password String
-  name     String
-  sessions Session[]
+  id                   String         @id @default(uuid())
+  email                String         @unique
+  password             String
+  name                 String
+  sessions             Session[]
+  CreatedCompanyGroups CompanyGroup[] @relation("creator")
+  EditedCompanyGroups  CompanyGroup[] @relation("editor")
 }
 
 model Session {
@@ -33,35 +35,29 @@ model Session {
   user      User?    @relation(fields: [uid], references: [id])
 }
 
-model Accounts {
-  company_group_id   Int       @id @default(autoincrement())
-  company_group_name String    @db.VarChar(50)
-  contact_person     String?   @db.VarChar(50)
-  phone              String?   @db.VarChar(10)
-  email_id           String?   @db.VarChar(100)
-  entered_by         String    @db.VarChar(10)
-  entry_date_time    DateTime  @default(now())
-  edited_by          String?   @db.VarChar(10)
-  edit_date_time     DateTime?
-}
-
 model CompanyGroup {
-  id         Int       @id @default(autoincrement())
-  name       String    @unique @db.VarChar(50)
-  companies  Company[]
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
+  company_group_id   Int       @id @default(autoincrement())
+  company_group_name String    @unique @db.VarChar(50)
+  contact_person     String    @db.VarChar(50)
+  phone              String    @db.VarChar(10)
+  email_id           String    @unique @db.VarChar(100)
+  entered_by         String
+  entry_date_time    DateTime  @default(now())
+  edited_by          String?
+  edit_date_time     DateTime?
+  userId             String
+  companies          Company[]
+
+  enteredByUser User  @relation(name: "creator", map: "EditedCompanyGroups", fields: [entered_by], references: [id])
+  editedByUser  User? @relation(name: "editor", map: "CreatedCompanyGroups", fields: [edited_by], references: [id])
 }
 
 model Company {
-  id               Int          @id @default(autoincrement())
-  name             String       @db.VarChar(100) //ADGCF2896J
-  pan              String       @unique @db.VarChar(10)
-  pan_name         String       @db.VarChar(100)
-  aadhar           String       @db.VarChar(12)
-  gstin            String       @unique @db.VarChar(15)
-  company_group_id Int
-  companyGroup     CompanyGroup @relation(fields: [company_group_id], references: [id])
-  created_at       DateTime     @default(now())
-  updated_at       DateTime     @updatedAt
+  id      Int          @id @default(autoincrement())
+  name    String
+  pan     String
+  panName String
+  aadhar  String
+  gstin   String
+  group   CompanyGroup @relation(fields: [id], references: [company_group_id])
 }
