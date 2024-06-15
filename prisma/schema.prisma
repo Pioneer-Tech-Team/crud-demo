@@ -25,3 +25,25 @@ model Accounts {
   edited_by          String?  @db.VarChar(10)
   edit_date_time     DateTime?
 }
+
+model CompanyGroup{
+  id               Int       @id @default( autoincrement())
+  name             String    @unique @db.VarChar(50 )
+  companies        Company[]
+// 
+  created_at       DateTime   @default(now( ))
+  updated_at       DateTime  @updatedAt
+}
+
+model Company{
+id               Int       @id @default(autoincrement())
+  name             String    @db.VarChar(100) //ADGCF2896J
+  pan              String    @unique @db.VarChar(10)
+  pan_name         String    @db.VarChar( 100)
+  aadhar           String    @db.VarChar(12)
+  gstin            String    @unique @db.VarChar(15)
+  company_group_id Int
+  companyGroup     CompanyGroup  @relation(fields:[ company_group_id],references:[id])
+  created_at       DateTime  @default( now())
+  updated_at       DateTime   @updatedAt
+}
