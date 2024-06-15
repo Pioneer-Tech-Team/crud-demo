@@ -21,6 +21,7 @@ CREATE TABLE "Company" (
     "panName" TEXT NOT NULL,
     "aadhar" TEXT NOT NULL,
     "gstin" TEXT NOT NULL,
+    "companyGroup" INTEGER NOT NULL,
 
     CONSTRAINT "Company_pkey" PRIMARY KEY ("id")
 );
@@ -38,4 +39,4 @@ ALTER TABLE "CompanyGroup" ADD CONSTRAINT "CompanyGroup_entered_by_fkey" FOREIGN
 ALTER TABLE "CompanyGroup" ADD CONSTRAINT "CompanyGroup_edited_by_fkey" FOREIGN KEY ("edited_by") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Company" ADD CONSTRAINT "Company_id_fkey" FOREIGN KEY ("id") REFERENCES "CompanyGroup"("company_group_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Company" ADD CONSTRAINT "Company_companyGroup_fkey" FOREIGN KEY ("companyGroup") REFERENCES "CompanyGroup"("company_group_id") ON DELETE RESTRICT ON UPDATE CASCADE;

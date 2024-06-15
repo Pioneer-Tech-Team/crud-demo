@@ -52,11 +52,12 @@ model CompanyGroup {
 }
 
 model Company {
-  id      Int          @id @default(autoincrement())
-  name    String
-  pan     String
-  panName String
-  aadhar  String
-  gstin   String
-  group   CompanyGroup @relation(fields: [id], references: [company_group_id])
+  id           Int          @id @default(autoincrement())
+  name         String
+  pan          String
+  panName      String
+  aadhar       String
+  gstin        String
+  companyGroup Int
+  group        CompanyGroup @relation(fields: [companyGroup], references: [company_group_id])
 }
