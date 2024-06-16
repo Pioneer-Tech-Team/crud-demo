@@ -105,6 +105,8 @@ export async function companyGroupController(app: FastifyInstance) {
 						email_id: contactPerson.email,
 						phone: contactPerson.phone,
 						entered_by: request.session.uid!,
+						edited_by: request.session.uid!,
+						edit_date_time: new Date(),
 					},
 				});
 
