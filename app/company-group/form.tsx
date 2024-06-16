@@ -13,10 +13,13 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 export const companyGroupFormSchema = z.object({
-	companyGroupName: z.string(),
-	contactPerson: z.string(),
-	phone: z.string(),
-	email: z.string(),
+	companyGroupName: z.string().max(50, "Should not exceed 50 characters"),
+	contactPerson: z.string().max(50, "Should not exceed 50 characters"),
+	phone: z.string().regex(/^[0-9]{10}/, "Invalid phone number"),
+	email: z
+		.string()
+		.email("Invalid email")
+		.max(100, "Should not exceed 100 characters"),
 });
 
 interface Props {
@@ -28,6 +31,7 @@ export function CompanyGroupForm({ defaultValues, handleSubmit }: Props) {
 	const form = useForm<z.infer<typeof companyGroupFormSchema>>({
 		resolver: zodResolver(companyGroupFormSchema),
 		defaultValues,
+		mode: "onChange",
 	});
 
 	return (
@@ -43,7 +47,7 @@ export function CompanyGroupForm({ defaultValues, handleSubmit }: Props) {
 						<FormItem>
 							<FormLabel>Name</FormLabel>
 							<FormControl>
-								<Input type="text" {...field} />
+								<Input type="text" {...field} placeholder="Company Pvt. Ltd." />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -56,7 +60,7 @@ export function CompanyGroupForm({ defaultValues, handleSubmit }: Props) {
 						<FormItem>
 							<FormLabel>Contact Person</FormLabel>
 							<FormControl>
-								<Input type="text" {...field} />
+								<Input type="text" {...field} placeholder="John Doe" />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -69,7 +73,11 @@ export function CompanyGroupForm({ defaultValues, handleSubmit }: Props) {
 						<FormItem>
 							<FormLabel>Email</FormLabel>
 							<FormControl>
-								<Input type="email" {...field} />
+								<Input
+									type="email"
+									{...field}
+									placeholder="contact@example.com"
+								/>
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -82,7 +90,7 @@ export function CompanyGroupForm({ defaultValues, handleSubmit }: Props) {
 						<FormItem>
 							<FormLabel>Phone</FormLabel>
 							<FormControl>
-								<Input type="tel" {...field} />
+								<Input type="tel" {...field} placeholder="9876543210" />
 							</FormControl>
 							<FormMessage />
 						</FormItem>

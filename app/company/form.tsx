@@ -22,10 +22,15 @@ import { z } from "zod";
 
 export const companyFormSchema = z.object({
 	name: z.string(),
-	pan: z.string(),
+	pan: z.string().regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Invalid PAN Number"),
 	panName: z.string(),
-	aadhar: z.string(),
-	gstin: z.string(),
+	aadhar: z.string().regex(/[0-9]{12}/, "Invalid Aadhar number"),
+	gstin: z
+		.string()
+		.regex(
+			/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/,
+			"Invalid GSTIN"
+		),
 	companyGroup: z.coerce.number(),
 });
 
@@ -34,7 +39,7 @@ interface Props {
 	handleSubmit: (data: z.infer<typeof companyFormSchema>) => void;
 }
 
-export function CompanyGroupForm({ defaultValues, handleSubmit }: Props) {
+export function CompanyForm({ defaultValues, handleSubmit }: Props) {
 	const { data: groups, isLoading } = useApi("/api/company-groups", {
 		method: "GET",
 	});
@@ -42,6 +47,7 @@ export function CompanyGroupForm({ defaultValues, handleSubmit }: Props) {
 	const form = useForm<z.infer<typeof companyFormSchema>>({
 		resolver: zodResolver(companyFormSchema),
 		defaultValues,
+		mode: "onChange",
 	});
 
 	if (!isLoading)
@@ -58,7 +64,7 @@ export function CompanyGroupForm({ defaultValues, handleSubmit }: Props) {
 							<FormItem>
 								<FormLabel>Name</FormLabel>
 								<FormControl>
-									<Input type="text" {...field} />
+									<Input type="text" {...field} placeholder="John Doe" />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -71,7 +77,7 @@ export function CompanyGroupForm({ defaultValues, handleSubmit }: Props) {
 							<FormItem>
 								<FormLabel>PAN</FormLabel>
 								<FormControl>
-									<Input type="text" {...field} />
+									<Input type="text" {...field} placeholder="ABCDE1234F" />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -84,7 +90,7 @@ export function CompanyGroupForm({ defaultValues, handleSubmit }: Props) {
 							<FormItem>
 								<FormLabel>PAN Name</FormLabel>
 								<FormControl>
-									<Input type="text" {...field} />
+									<Input type="text" {...field} placeholder="John Doe" />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -97,7 +103,7 @@ export function CompanyGroupForm({ defaultValues, handleSubmit }: Props) {
 							<FormItem>
 								<FormLabel>Aadhar</FormLabel>
 								<FormControl>
-									<Input type="text" {...field} />
+									<Input type="text" {...field} placeholder="123456789012" />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -110,7 +116,7 @@ export function CompanyGroupForm({ defaultValues, handleSubmit }: Props) {
 							<FormItem>
 								<FormLabel>GSTIN</FormLabel>
 								<FormControl>
-									<Input type="text" {...field} />
+									<Input type="text" {...field} placeholder="01AAABC1234B1Z9" />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -125,7 +131,9 @@ export function CompanyGroupForm({ defaultValues, handleSubmit }: Props) {
 								<FormControl>
 									<Select
 										onValueChange={field.onChange}
-										defaultValue={String(field.value)}
+										defaultValue={
+											defaultValues.companyGroup > 0 ? String(field.value) : ""
+										}
 									>
 										<FormControl>
 											<SelectTrigger>

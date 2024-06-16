@@ -14,7 +14,7 @@ import {
 	DialogDescription,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import { CompanyGroupForm, companyFormSchema } from "./form";
+import { CompanyForm, companyFormSchema } from "./form";
 import client from "@/api/client";
 import { toast } from "sonner";
 import { EyeOpenIcon, Pencil2Icon, TrashIcon } from "@radix-ui/react-icons";
@@ -167,7 +167,7 @@ export default function CompanyPage() {
 			<h1 className="lead">Company</h1>
 			{!isLoading ? (
 				<>
-					<Button onClick={() => setAddDialog(true)}>Add Group</Button>
+					<Button onClick={() => setAddDialog(true)}>Add Company</Button>
 					<DataTable columns={columns} data={companies} />
 
 					<Dialog open={displayDialog} onOpenChange={setDisplayDialog}>
@@ -197,9 +197,9 @@ export default function CompanyPage() {
 					<Dialog open={addDialog} onOpenChange={setAddDialog}>
 						<DialogContent>
 							<DialogHeader>
-								<DialogTitle>Add Company Group</DialogTitle>
+								<DialogTitle>Add Company</DialogTitle>
 							</DialogHeader>
-							<CompanyGroupForm
+							<CompanyForm
 								handleSubmit={handleAdd}
 								defaultValues={{
 									aadhar: "",
@@ -218,7 +218,7 @@ export default function CompanyPage() {
 							<DialogHeader>
 								<DialogTitle>Edit</DialogTitle>
 							</DialogHeader>
-							<CompanyGroupForm
+							<CompanyForm
 								handleSubmit={handleEdit}
 								defaultValues={{
 									aadhar: activeCompany?.aadhar ?? "",
@@ -237,7 +237,7 @@ export default function CompanyPage() {
 							<DialogHeader>
 								<DialogTitle>Delete</DialogTitle>
 								<DialogDescription>
-									Do you want to delete the company group{" "}
+									Do you want to delete the company{" "}
 									<b>{activeCompany?.name}</b>?
 								</DialogDescription>
 							</DialogHeader>
