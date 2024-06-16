@@ -1,5 +1,5 @@
 import { SessionStore } from "@fastify/session";
-import { PrismaClient, Prisma } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { Session } from "fastify";
 
 export class PrismaSessionStore implements SessionStore {
@@ -12,7 +12,7 @@ export class PrismaSessionStore implements SessionStore {
 		this.prisma.session
 			.upsert({
 				where: { sid: sessionId },
-				update: { data: session as any },
+				update: { data: session as any, uid: session.uid },
 				create: {
 					sid: sessionId,
 					data: session as any,
