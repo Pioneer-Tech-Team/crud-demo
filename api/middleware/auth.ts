@@ -16,7 +16,7 @@ export const checkSession: FastifyAuthFunction = async function (
 		select: { user: true },
 	});
 	if (!session || !session.user) {
-		return reply.code(401).send({ message: "Unauthorized" });
+		return reply.code(401).send({ message: "Unauthorized" }).redirect("/login");
 	}
 
 	this.user = session.user;

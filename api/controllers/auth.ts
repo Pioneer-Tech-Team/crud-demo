@@ -40,9 +40,6 @@ export async function authController(app: FastifyInstance) {
 					},
 				});
 
-				request.session.uid = user.id;
-				request.session.authenticated = true;
-
 				return reply.code(200).send({ message: "Registeration successful" });
 			} catch (err) {
 				app.log.error(err);

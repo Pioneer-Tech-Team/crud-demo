@@ -23,9 +23,17 @@ export default function Home() {
 			{user ? (
 				<>
 					<p className="lead">Logged in as {user.name}</p>
-					<Button onClick={logout} variant="destructive">
-						Logout
-					</Button>
+					<div className="flex gap-4">
+						<Button onClick={logout} variant="destructive">
+							Logout
+						</Button>
+						<Button asChild>
+							<Link href="/company">Company</Link>
+						</Button>
+						<Button asChild>
+							<Link href="/company-group">Company Group</Link>
+						</Button>
+					</div>
 				</>
 			) : (
 				<>
