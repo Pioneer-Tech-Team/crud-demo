@@ -6,242 +6,258 @@ import { DataTable } from "../../components/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 import { Company, CompanyGroup } from "@prisma/client";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { z } from "zod";
 import {
-	Dialog,
-	DialogContent,
-	DialogHeader,
-	DialogDescription,
-	DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogDescription,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { CompanyGroupForm, companyFormSchema } from "./form";
 import client from "@/api/client";
 import { toast } from "sonner";
+import { Separator } from "@/components/ui/separator";
+import { EyeOpenIcon, Pencil2Icon, TrashIcon } from "@radix-ui/react-icons";
 
 export default function CompanyPage() {
-	const {
-		data: companies,
-		isLoading,
-		mutate,
-	} = useApi("/api/companies", { method: "GET" });
+  const {
+    data: companies,
+    isLoading,
+    mutate,
+  } = useApi("/api/companies", { method: "GET" });
 
-	const [addDialog, setAddDialog] = useState(false);
-	const [displayDialog, setDisplayDialog] = useState(false);
-	const [editDialog, setEditDialog] = useState(false);
-	const [deleteDialog, setDeleteDialog] = useState(false);
+  const [addDialog, setAddDialog] = useState(false);
+  const [displayDialog, setDisplayDialog] = useState(false);
+  const [editDialog, setEditDialog] = useState(false);
+  const [deleteDialog, setDeleteDialog] = useState(false);
 
-	const [activeCompany, setActiveCompany] = useState<Company | null>(null);
+  const [activeCompany, setActiveCompany] = useState<Company | null>(null);
 
-	useEffect(() => {
-		console.log(companies);
-	}, [companies]);
+  useEffect(() => {
+    console.log(companies);
+  }, [companies]);
 
-	const columns: ColumnDef<Company>[] = [
-		{
-			accessorKey: "id",
-			header: "ID",
-		},
-		{
-			accessorKey: "name",
-			header: "Company",
-		},
-		{
-			accessorKey: "group.company_group_name",
-			header: "Company Group",
-		},
-		{
-			accessorKey: "pan",
-			header: "PAN",
-		},
-		{
-			accessorKey: "aadhar",
-			header: "Aadhar",
-		},
-		{
-			id: "actions",
-			cell: ({ row }) => {
-				const companyGroup = row.original;
-				return (
-					<DropdownMenu>
-						<DropdownMenuTrigger asChild>
-							<Button>...</Button>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent align="end">
-							<DropdownMenuLabel>Actions</DropdownMenuLabel>
-							<DropdownMenuSeparator />
-							<DropdownMenuItem
-								onClick={() => {
-									setDisplayDialog(true);
-									setActiveCompany(companyGroup);
-								}}
-							>
-								Display
-							</DropdownMenuItem>
-							<DropdownMenuItem
-								onClick={() => {
-									setEditDialog(true);
-									setActiveCompany(companyGroup);
-								}}
-							>
-								Edit
-							</DropdownMenuItem>
-							<DropdownMenuItem
-								onClick={() => {
-									setDeleteDialog(true);
-									setActiveCompany(companyGroup);
-								}}
-							>
-								Delete
-							</DropdownMenuItem>
-						</DropdownMenuContent>
-					</DropdownMenu>
-				);
-			},
-			header: "Actions",
-		},
-	];
+  const columns: ColumnDef<Company>[] = [
+    {
+      accessorKey: "id",
+      header: "ID",
+    },
+    {
+      accessorKey: "name",
+      header: "Company",
+    },
+    {
+      accessorKey: "group.company_group_name",
+      header: "Company Group",
+    },
+    {
+      accessorKey: "pan",
+      header: "PAN",
+    },
+    {
+      accessorKey: "aadhar",
+      header: "Aadhar",
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => {
+        const companyGroup = row.original;
+        return (
+          <div className="flex gap-1">
+            <Button
+              onClick={() => {
+                setDisplayDialog(true);
+                setActiveCompany(companyGroup);
+              }}
+            >
+              <EyeOpenIcon />
+            </Button>
 
-	async function handleAdd(data: z.infer<typeof companyFormSchema>) {
-		const { data: resp, error } = await client.POST("/api/company", {
-			body: {
-				aadhar: data.aadhar,
-				groupId: data.companyGroup,
-				gstin: data.gstin,
-				name: data.name,
-				pan: data.pan,
-				panName: data.panName,
-			},
-		});
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setEditDialog(true);
+                setActiveCompany(companyGroup);
+              }}
+            >
+              <Pencil2Icon />
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                setDeleteDialog(true);
+                setActiveCompany(companyGroup);
+              }}
+            >
+              <TrashIcon />
+            </Button>
+          </div>
+        );
+      },
+      header: "Actions",
+    },
+  ];
 
-		setAddDialog(false);
-		mutate("api");
+  async function handleAdd(data: z.infer<typeof companyFormSchema>) {
+    const { data: resp, error } = await client.POST("/api/company", {
+      body: {
+        aadhar: data.aadhar,
+        groupId: data.companyGroup,
+        gstin: data.gstin,
+        name: data.name,
+        pan: data.pan,
+        panName: data.panName,
+      },
+    });
 
-		if (resp) {
-			toast.success("Successfully added company");
-		} else if (error) {
-			toast.error("Error adding company");
-		}
-	}
+    setAddDialog(false);
+    mutate("api");
 
-	async function handleEdit(data: z.infer<typeof companyFormSchema>) {
-		if (!activeCompany) return;
+    if (resp) {
+      toast.success("Successfully added company");
+    } else if (error) {
+      toast.error("Error adding company");
+    }
+  }
 
-		const { data: resp, error } = await client.PUT("/api/company/{id}", {
-			params: { path: { id: activeCompany!.id } },
-			body: {
-				aadhar: data.aadhar,
-				groupId: data.companyGroup,
-				gstin: data.gstin,
-				name: data.name,
-				pan: data.pan,
-				panName: data.panName,
-			},
-		});
+  async function handleEdit(data: z.infer<typeof companyFormSchema>) {
+    if (!activeCompany) return;
 
-		setEditDialog(false);
-		mutate("api");
+    const { data: resp, error } = await client.PUT("/api/company/{id}", {
+      params: { path: { id: activeCompany!.id } },
+      body: {
+        aadhar: data.aadhar,
+        groupId: data.companyGroup,
+        gstin: data.gstin,
+        name: data.name,
+        pan: data.pan,
+        panName: data.panName,
+      },
+    });
 
-		if (resp) {
-			toast.success("Successfully edited company");
-		} else if (error) {
-			toast.error("Error editing company");
-		}
-	}
+    setEditDialog(false);
+    mutate("api");
 
-	async function handleDelete() {
-		if (!activeCompany) return;
+    if (resp) {
+      toast.success("Successfully edited company");
+    } else if (error) {
+      toast.error("Error editing company");
+    }
+  }
 
-		const { data: resp, error } = await client.DELETE("/api/company/{id}", {
-			params: { path: { id: activeCompany!.id } },
-		});
+  async function handleDelete() {
+    if (!activeCompany) return;
 
-		setDeleteDialog(false);
-		mutate("api");
+    const { data: resp, error } = await client.DELETE("/api/company/{id}", {
+      params: { path: { id: activeCompany!.id } },
+    });
 
-		if (resp) {
-			toast.success("Successfully deleted company");
-		} else if (error) {
-			toast.error("Error deleting company");
-		}
-	}
+    setDeleteDialog(false);
+    mutate("api");
 
-	return (
-		<section className="prose max-w-none grid place-items-center gap-4 p-4 w-full">
-			<h1 className="lead">Company</h1>
-			{!isLoading && (
-				<>
-					<Button onClick={() => setAddDialog(true)}>Add Group</Button>
-					<DataTable columns={columns} data={companies} />
+    if (resp) {
+      toast.success("Successfully deleted company");
+    } else if (error) {
+      toast.error("Error deleting company");
+    }
+  }
 
-					<Dialog open={displayDialog} onOpenChange={setDisplayDialog}>
-						<DialogContent>
-							<DialogTitle>{activeCompany?.name}</DialogTitle>
-						</DialogContent>
-					</Dialog>
+  return (
+    <section className="prose max-w-none grid place-items-center gap-4 p-4 w-full">
+      <h1 className="lead">Company</h1>
+      {!isLoading && (
+        <>
+          <Button onClick={() => setAddDialog(true)}>Add Group</Button>
+          <DataTable columns={columns} data={companies} />
 
-					<Dialog open={addDialog} onOpenChange={setAddDialog}>
-						<DialogContent>
-							<DialogHeader>
-								<DialogTitle>Add Company Group</DialogTitle>
-							</DialogHeader>
-							<CompanyGroupForm
-								handleSubmit={handleAdd}
-								defaultValues={{
-									aadhar: "",
-									companyGroup: 0,
-									gstin: "",
-									name: "",
-									pan: "",
-									panName: "",
-								}}
-							/>
-						</DialogContent>
-					</Dialog>
+          <Dialog open={displayDialog} onOpenChange={setDisplayDialog}>
+            <DialogContent>
+              <DialogTitle>{activeCompany?.name}</DialogTitle>
+              <DialogDescription>
+                <p>
+                  <span className="text-black mr-2 ">PAN</span>:{" "}
+                  {activeCompany?.pan}
+                </p>
+                <p>
+                  <span className="text-black mr-2 ">PAN Name</span>:{" "}
+                  {activeCompany?.panName}
+                </p>
+                <p>
+                  <span className="text-black mr-2 ">Aadhar</span>:{" "}
+                  {activeCompany?.aadhar}
+                </p>
+                <p>
+                  <span className="text-black mr-2 ">GSTIN</span>:{" "}
+                  {activeCompany?.gstin}
+                </p>
+              </DialogDescription>
+            </DialogContent>
+          </Dialog>
 
-					<Dialog open={editDialog} onOpenChange={setEditDialog}>
-						<DialogContent>
-							<DialogHeader>
-								<DialogTitle>Edit</DialogTitle>
-							</DialogHeader>
-							<CompanyGroupForm
-								handleSubmit={handleEdit}
-								defaultValues={{
-									aadhar: activeCompany?.aadhar ?? "",
-									companyGroup: activeCompany?.companyGroup ?? 0,
-									gstin: activeCompany?.gstin ?? "",
-									name: activeCompany?.name ?? "",
-									pan: activeCompany?.pan ?? "",
-									panName: activeCompany?.panName ?? "",
-								}}
-							/>
-						</DialogContent>
-					</Dialog>
+          <Dialog open={addDialog} onOpenChange={setAddDialog}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add Company Group</DialogTitle>
+              </DialogHeader>
+              <CompanyGroupForm
+                handleSubmit={handleAdd}
+                defaultValues={{
+                  aadhar: "",
+                  companyGroup: 0,
+                  gstin: "",
+                  name: "",
+                  pan: "",
+                  panName: "",
+                }}
+              />
+            </DialogContent>
+          </Dialog>
 
-					<Dialog open={deleteDialog} onOpenChange={setDeleteDialog}>
-						<DialogContent>
-							<DialogHeader>
-								<DialogTitle>Delete</DialogTitle>
-								<DialogDescription>
-									Do you want to delete the company group{" "}
-									<b>{activeCompany?.name}</b>?
-								</DialogDescription>
-							</DialogHeader>
+          <Dialog open={editDialog} onOpenChange={setEditDialog}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Edit</DialogTitle>
+              </DialogHeader>
+              <CompanyGroupForm
+                handleSubmit={handleEdit}
+                defaultValues={{
+                  aadhar: activeCompany?.aadhar ?? "",
+                  companyGroup: activeCompany?.companyGroup ?? 0,
+                  gstin: activeCompany?.gstin ?? "",
+                  name: activeCompany?.name ?? "",
+                  pan: activeCompany?.pan ?? "",
+                  panName: activeCompany?.panName ?? "",
+                }}
+              />
+            </DialogContent>
+          </Dialog>
 
-							<Button variant="destructive" onClick={handleDelete}>
-								Yes, Delete
-							</Button>
-						</DialogContent>
-					</Dialog>
-				</>
-			)}
-		</section>
-	);
+          <Dialog open={deleteDialog} onOpenChange={setDeleteDialog}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Delete</DialogTitle>
+                <DialogDescription>
+                  Do you want to delete the company group{" "}
+                  <b>{activeCompany?.name}</b>?
+                </DialogDescription>
+              </DialogHeader>
+
+              <Button variant="destructive" onClick={handleDelete}>
+                Yes, Delete
+              </Button>
+            </DialogContent>
+          </Dialog>
+        </>
+      )}
+    </section>
+  );
 }
