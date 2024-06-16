@@ -27,6 +27,7 @@ const isDev = process.env.NODE_ENV !== "production";
 const envSchema = z.object({
 	DATABASE_URL: z.string(),
 	SESSION_SECRET: z.string().min(128),
+	WEB_DOMAIN: z.string().default("localhost")
 });
 
 declare module "fastify" {
@@ -94,7 +95,8 @@ export async function createApp() {
 	await app.register(fastifyCookie);
 	await app.register(fastifySession, {
 		cookie: {
-			secure: !isDev,
+			secure: false, // TODO: do something about this
+			domain: app.config.WEB_DOMAIN,
 			maxAge: 24 * 60 * 60 * 1000,
 		},
 		secret: app.config.SESSION_SECRET,
