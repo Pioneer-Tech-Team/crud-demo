@@ -68,7 +68,9 @@ export async function companyGroupController(app: FastifyInstance) {
 		handler: async (request, reply) => {
 			const { prisma } = app;
 
-			const companyGroups = await prisma.companyGroup.findMany();
+			const companyGroups = await prisma.companyGroup.findMany({
+				orderBy: { company_group_id: "asc" },
+			});
 
 			return reply.status(200).send(companyGroups);
 		},
@@ -211,7 +213,10 @@ export async function companyController(app: FastifyInstance) {
 		handler: async (request, reply) => {
 			const { prisma } = app;
 
-			const companies = await prisma.company.findMany();
+			const companies = await prisma.company.findMany({
+				orderBy: { id: "asc" },
+				include: { group: true },
+			});
 
 			return reply.status(200).send(companies);
 		},
