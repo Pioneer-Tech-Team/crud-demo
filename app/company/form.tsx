@@ -125,7 +125,7 @@ export function CompanyGroupForm({ defaultValues, handleSubmit }: Props) {
 								<FormControl>
 									<Select
 										onValueChange={field.onChange}
-										defaultValue={field.value}
+										defaultValue={String(field.value)}
 									>
 										<FormControl>
 											<SelectTrigger>
@@ -140,7 +140,7 @@ export function CompanyGroupForm({ defaultValues, handleSubmit }: Props) {
 												}) => (
 													<SelectItem
 														key={group.company_group_id}
-														value={group.company_group_id}
+														value={String(group.company_group_id)}
 													>
 														{group.company_group_name}
 													</SelectItem>
